@@ -4,7 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import {images} from '../../constants'
 import {FromField} from '../../components/FromField'
 import {CustomButton} from '../../components/CustomButton'
-import { Link } from 'expo-router'
+import { Link, router } from 'expo-router'
+
+import {registerUser} from '../../lib/api/auth'
 
 const SignUp = () => {
   const [from,setForm] = useState({
@@ -15,8 +17,19 @@ const SignUp = () => {
     })
     const [isSumbitting,setSubmitting] = useState(false)
   
-    const sumbit = () => {
-      
+    const sumbit = async () => {
+      if(password !== passwordAgain)
+      {
+        console.log("Nem egyeznek a jelszavak");
+        setSubmitting(false);
+        return;
+      }
+      setSubmitting(true);
+      const response = await registerUser(from.email,from.password,from.name);
+      if(response.success === true)
+      {
+        router.push("/(auth)/sign-in");
+      }
     }
   
     return (

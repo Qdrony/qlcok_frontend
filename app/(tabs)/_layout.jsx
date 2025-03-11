@@ -24,11 +24,11 @@ const TabsLayout = () => {
       <Tabs
         screenOptions={{
           tabBarShowLabel: false,
-          tabBarActiveTintColor: '#FFA001',
+          tabBarActiveTintColor: '#99F05A',
           tabBarInactiveTintColor: '#CDCDE0',
           tabBarStyle: {
             backgroundColor: '#161622',
-            borderTopWidth: 1,
+            borderTopWidth: 0,
             borderTopColor: '#232533',
             height: 50,
             justifyContent: 'center',
@@ -63,6 +63,44 @@ const TabsLayout = () => {
                 focused={focused}
               />
             )
+          }}
+        />
+        <Tabs.Screen
+          name='key'
+          options={{
+            title: 'Kulcsok',
+            headerShown: false,
+            tabBarIcon: ({color, focused}) => (
+              <TabIcon
+                icon={icons.key}
+                color={color}
+                name="Kulcs"
+                focused={focused}
+              />
+            )
+          }}
+        />
+        <Tabs.Screen
+          name='lock'
+          options={{
+            title: 'Zár',
+            headerShown: false,
+            tabBarIcon: ({color, focused}) => (
+              <TabIcon
+                icon={icons.lock}
+                color={color}
+                name="Zár"
+                focused={focused}
+              />
+            )
+          }}
+        />
+        <Tabs.Screen
+          name='lockProfile'
+          options={{
+            title: 'LockProfile',
+            headerShown: false,
+            href: null,
           }}
         />
       </Tabs>

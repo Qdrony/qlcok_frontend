@@ -4,7 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import {images} from '../../constants'
 import {FromField} from '../../components/FromField'
 import {CustomButton} from '../../components/CustomButton'
-import { Link } from 'expo-router'
+import { Link, router } from 'expo-router'
+import {loginUser} from '../../lib/api/auth' 
 
 const SignIn = () => {
 
@@ -12,10 +13,15 @@ const SignIn = () => {
     email: '',
     password: ''
   })
-  const [isSumbitting,setSubmitting] = useState(false)
+  const [isSubmitting,setSubmitting] = useState(false)
 
-  const sumbit = () => {
-
+  const submit = async () => {
+    setSubmitting(true);
+    const response = await loginUser(from.email,from.password);
+    if(response.success === true)
+    {
+      router.push("/(tabs)/home");
+    }
   }
 
   return (
@@ -48,9 +54,9 @@ const SignIn = () => {
           
           <CustomButton 
             title="Bejelentkezés"
-            handlePress={sumbit}
+            handlePress={submit}
             containerStyles="mt-7"
-            isLoading={isSumbitting}
+            isLoading={isSubmitting}
           />
 
           <View className='justify-center pt-5 flex-row gap-2'>

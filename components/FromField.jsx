@@ -17,7 +17,7 @@ export const FromField = ({title, value, placeholder, handleChangeText, otherSty
             placeholder={placeholder}
             placeholderTextColor="#7b7b8b"
             onChangeText={handleChangeText}
-            secureTextEntry={title === 'Password' && !showPassword}
+            secureTextEntry={(title === 'Password' || title === 'Password Again') && !showPassword}
           />
 
           {(title === 'Password' || title === 'Password Again') && (

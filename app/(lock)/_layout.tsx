@@ -2,12 +2,12 @@ import { StatusBar } from 'react-native'
 import React from 'react'
 import { Stack } from 'expo-router'
 
-const AuthLayout = () => {
+const LockLayout = () => {
   return (
     <>
       <Stack>
         <Stack.Screen
-          name='sign-in'
+          name='lockKeys'
           options={{
             headerShown: false
           }}
@@ -28,4 +28,4 @@ const AuthLayout = () => {
   )
 }
 
-export default AuthLayout
+export default LockLayout

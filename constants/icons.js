@@ -13,10 +13,18 @@ import eye from "../assets/icons/eye.png";
 import play from "../assets/icons/play.png";
 import lock from "../assets/icons/lock.png";
 import key from "../assets/icons/key.png";
-import lockoutGreen from "../assets/icons/lockout-green.png";
+import logoutGreen from "../assets/icons/logout_green.png";
+import noResult from "../assets/icons/no_results_green.png"
+import noResultYellow from "../assets/icons/no_result_yellow.png"
+import log from "../assets/icons/log.png"
+import bin from "../assets/icons/bin.png"
 
 export default {
-  lockoutGreen,
+  bin,
+  log,
+  noResultYellow,
+  noResult,
+  logoutGreen,
   lock,
   key,
   play,

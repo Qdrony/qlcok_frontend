@@ -6,32 +6,41 @@ import SearchInput from '../../components/SearchInput'
 import EmptyState from '../../components/EmptyState'
 import KeyCard from '../../components/KeyCard'
 import CustomButton from '../../components/CustomButton'
-import { getUserKeys } from '../../lib/api/keys'
+import { getKeysForLock, getUserKeys } from '../../lib/api/keys'
 import { getUser, saveCurrentKey } from '../../lib/services/secureStore'
+import { Link, router, useLocalSearchParams } from 'expo-router'
+import { getLockById } from '../../lib/api/locks'
+import FromField from '../../components/FromField'
 
-const Key = () => {
+const lockKeys = () => {
 
   const [keys, setKeys] = useState([]);
-  const [name,setName] = useState("Felhasználó");
   const [selectedKey,setSelectedKey] = useState(null);
+  const [selectedLock,setSelectedLock] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [remainingUses,setReamininguses] = useState(0);
+  const [date,setDate] = useState(new Date());
+
+  const params = useLocalSearchParams();
+  const selectedLockId = params.id;
+
   const modalScreen = (keyId) => {
     const foundKey = keys.find(key => key.id === keyId);
     setSelectedKey(foundKey);
     setModalVisible(true);
   }
 
-  const fetchKeys = async () => {
-    const user = await getUser();
-    const data = await getUserKeys(user.id);
+  const fetchLock = async () => {
+    const lock = await getLockById(selectedLockId);
+    const data = await getKeysForLock(selectedLockId)
     if (data) setKeys(data)
-    if (user.name) setName(user.name)
+    if (lock) setSelectedLock(lock);
             
     setIsLoading(false);
   };
 
   useEffect(() => {
-    fetchKeys();
+    fetchLock();
   }, []);
 
   const [isLoading,setIsLoading] = useState(true);
@@ -40,7 +49,7 @@ const Key = () => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await fetchKeys();
+    await fetchLock();
     setRefreshing(false);
   }
 
@@ -51,7 +60,7 @@ const Key = () => {
         data={keys}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({item}) => (
-          <KeyCard item={item} fn={() => modalScreen(item.id)}/>
+          <KeyCard item={item} fn={() => modalScreen(item.id)} del={true} delFn={() => console.log("katt")}/>
         )}
 
         ListHeaderComponent={() => (
@@ -62,7 +71,7 @@ const Key = () => {
                 className='h-14 w-36'
                 resizeMethod='contain'
               />
-              <Text className='text-xl font-psemibold text-primary mt-4'>{name} kulcsai</Text>
+              <Text className='text-xl font-psemibold text-primary mt-4'>{selectedLock ? selectedLock.name : "zár"} kulcsai</Text>
             </View>
 
             <SearchInput
@@ -95,14 +104,20 @@ const Key = () => {
                   <Text className='ml-4 font-psemibold text-xl'>{selectedKey.name}</Text>
                 </View>
 
-                <Text className='font-psemibold text-xl'>Adatok:</Text>                
+                <Text className='font-psemibold text-xl'>Adatok</Text>                
                 <Text className='font-psemibold text-xl'>Használhatóság: {selectedKey.remainingUses === -1 ? 'Állandó' : (selectedKey.remainingUses + 'db')}</Text>
+                <FromField
+                    placeholder={"adjon meg egy számot"}
+                    otherStyles="mt-7"
+                    handleChangeText={(e) => setForm({
+                        ...from, email: e
+                    })}
+                />
                 <Text className='font-psemibold text-xl'>Lejárati idő: {selectedKey.remainingUses === -1 ? 'Nincs' : (selectedKey.expirationDate)}</Text>
-                <Text className='font-psemibold text-xl'>Zár neve: {selectedKey.lockName}</Text>
                 <Text className='font-psemibold text-xl'>Létrehozás dátuma: {selectedKey.createdAt.slice(0,10)}</Text>
-
+               
+                <CustomButton handlePress={() => saveCurrentKey(selectedKey)} title={"Mentés"}/>
                 <CustomButton handlePress={() => setModalVisible(false)} title="Bezárás"/>
-                <CustomButton handlePress={() => saveCurrentKey(selectedKey)} title={"Kulcs használata"}/>
               </>
             ) : (
               <Text>Betöltés...</Text>
@@ -117,4 +132,4 @@ const Key = () => {
   )
 }
 
-export default Key
+export default lockKeys
