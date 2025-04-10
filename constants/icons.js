@@ -18,8 +18,12 @@ import noResult from "../assets/icons/no_results_green.png"
 import noResultYellow from "../assets/icons/no_result_yellow.png"
 import log from "../assets/icons/log.png"
 import bin from "../assets/icons/bin.png"
+import group from "../assets/icons/group.png"
+import user from "../assets/icons/user.png"
 
 export default {
+  user,
+  group,
   bin,
   log,
   noResultYellow,

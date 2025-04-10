@@ -2,8 +2,6 @@ import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import {images, icons} from '../../constants'
-import {FromField} from '../../components/FromField'
-import {CustomButton} from '../../components/CustomButton'
 import LockNameModal from '../../components/LockNameModal'
 import LockStatusModal from '../../components/LockStatusModal'
 import { Link, router, useLocalSearchParams } from 'expo-router'
@@ -19,8 +17,8 @@ const lockProfile = () => {
     const selectedLockId = params.id;
 
     const fetchLock = async (lockId) => {        
-        const lock = await getLockById(lockId)
-        if(lock) setLock(lock)    
+        const lock = await getLockById(lockId);
+        if(lock) setLock(lock);  
     }
 
     useEffect(() => {
@@ -29,22 +27,20 @@ const lockProfile = () => {
 
     return (
             <SafeAreaView className='bg-tertiary h-full'>
-                <ScrollView>
-                    {lock ? (<View className='w-full min-h-[85vh] px-4 my-6'>
+                <ScrollView> 
+                    {lock ? (<View className='w-full min-h-[55vh] px-4 my-6 gap-y-2'>
 
-                                <TouchableOpacity onPress={() => {setActiveModal("name")}
-                                    
-                                } className='w-full bg-secondary rounded-3xl mb-2'>
+                                <TouchableOpacity onPress={() => {setActiveModal("name")}} className='w-full bg-secondary rounded-3xl'>
                                     <View className='flex-row w-full items-center'>
                                     <Image
                                         source={icons.lock}
-                                        className='h-20 w-20 ml-4 my-4'
+                                        className='h-16 w-16 ml-4 my-4'
                                     />
                                     <Text className='ml-4 font-psemibold text-2xl'>Zár: {lock.name}</Text>
                                     </View>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity onPress={() => {setActiveModal("status")}} className='w-full bg-secondary rounded-3xl mb-2'>
+                                <TouchableOpacity onPress={() => {setActiveModal("status")}} className='w-full bg-secondary rounded-3xl'>
                                     <View className='w-full items-center'>
                                         <Text className='mt-3 mb-1 font-psemibold text-2xl'>Zár adatok:</Text>
                                     </View>
@@ -59,19 +55,47 @@ const lockProfile = () => {
                                      className='w-full h-[15%] bg-primary rounded-3xl flex-row items-center'>
                                     <Image
                                         source={icons.key}
-                                        className='w-20 h-20 ml-5'
+                                        className='w-16 h-16 ml-5'
                                     />
-                                    <View className='justify-center items-center'>
+                                    <View className='ml-2 justify-center items-center'>
                                         <Text className='font-psemibold text-xl'>Kiosztott kulcsok megtekintése</Text>
                                     </View>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity className='mt-2 w-full h-[15%] bg-secondary rounded-3xl flex-row items-center'>
+                                <TouchableOpacity onPress={() => router.push({
+                                      pathname: "../(lock)/addKey",
+                                      params: {id: selectedLockId}
+                                    })}
+                                     className='w-full h-[15%] bg-primary rounded-3xl flex-row items-center'>
+                                    <Image
+                                        source={icons.key}
+                                        className='w-16 h-16 ml-5'
+                                    />
+                                    <View className='ml-2 justify-center items-center'>
+                                        <Text className='font-psemibold text-xl'>Kulcs kiosztása</Text>
+                                    </View>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity onPress={() => router.push({
+                                      pathname: "../(group)/lockGroup",
+                                      params: {id: selectedLockId}
+                                    })} className='w-full h-[15%] bg-secondary rounded-3xl flex-row items-center'>
+                                    <Image
+                                        source={icons.group}
+                                        className='w-16 h-16 ml-4'
+                                    />
+                                    <Text className='ml-2 font-psemibold text-2xl'>Csoportok megtekintése</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity onPress={() => router.push({
+                                      pathname: "../(log)/logProfile",
+                                      params: {id: selectedLockId}
+                                    })} className='w-full h-[15%] bg-secondary rounded-3xl flex-row items-center'>
                                     <Image
                                         source={icons.log}
-                                        className='w-20 h-20 ml-4'
+                                        className='w-16 h-16 ml-4'
                                     />
-                                    <Text className='ml-5 font-psemibold text-2xl'>Napló megtekintése</Text>
+                                    <Text className='ml-2 font-psemibold text-2xl'>Napló megtekintése</Text>
                                 </TouchableOpacity>
 
                             </View>) : (<Text>Betöltés...</Text>)}

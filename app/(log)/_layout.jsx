@@ -2,23 +2,22 @@ import { StatusBar } from 'react-native'
 import React from 'react'
 import { Stack } from 'expo-router'
 
-const LockLayout = () => {
+const GroupLayout = () => {
   return (
     <>
       <Stack>
         <Stack.Screen
-          name='lockKeys'
+          name='logProfile'
           options={{
             headerShown: false
           }}
         />
         <Stack.Screen
-          name='addKey'
+          name='log'
           options={{
             headerShown: false
           }}
         />
-
         <StatusBar
           backgroundColor='black'
           barStyle='light-content'
@@ -28,4 +27,4 @@ const LockLayout = () => {
   )
 }
 
-export default LockLayout
+export default GroupLayout

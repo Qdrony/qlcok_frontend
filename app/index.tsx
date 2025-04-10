@@ -1,10 +1,25 @@
-import { Link, Redirect, router } from 'expo-router';
-import { Image, StyleSheet, Platform, View, Text, ScrollView, StatusBar } from 'react-native';
+import { router } from 'expo-router';
+import { Image, View, Text, ScrollView, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {images} from '../constants'
 import {CustomButton} from '../components/CustomButton'
+import { getUser } from '@/lib/services/secureStore';
+import {loginUser} from '../lib/api/auth' 
 
 export default function HomeScreen() {
+  const loggedIn = async () => {
+    if(getUser() === null) {
+      return;
+    }else {
+      const user = await getUser();
+      const response = await loginUser(user.email, user.password);
+      if(response.success === true)
+      {
+        router.push("/(tabs)/home");
+      }
+    }
+
+  }
   return (
     <SafeAreaView className='bg-tertiary h-full'>
       <ScrollView contentContainerStyle={{height: '100%'}}>

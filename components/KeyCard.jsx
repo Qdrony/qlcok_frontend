@@ -5,7 +5,7 @@ import { icons } from '../constants'
 const KeyCard = ({item, fn, del, delFn}) => {
   return (
     <TouchableOpacity 
-      className='w-full h-16 rounded-2xl bg-primary flex-row items-center px-2 justify-between'
+      className='w-full h-16 rounded-2xl bg-primary flex-row items-center px-2 justify-between mb-2'
       onPress={fn}
     >
       <Image 

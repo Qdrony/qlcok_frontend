@@ -1,29 +1,42 @@
-import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import { View, Text, Image, ScrollView, TouchableOpacity, Modal } from 'react-native'
+import React, { useState, useCallback, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import {images, icons} from '../../constants'
 import {FromField} from '../../components/FromField'
 import {CustomButton} from '../../components/CustomButton'
-import { Link, router } from 'expo-router'
-import { getUser } from '../../lib/services/secureStore'
+import { router } from 'expo-router'
+import { getCurrentKey, getUser } from '../../lib/services/secureStore'
+import { useFocusEffect } from '@react-navigation/native'
+import { registerForPushNotificationsAsync } from '../../lib/services/notification'
+import { postPushToken } from '../../lib/api/users'
 
 const Home = () => {
 
   const [name,setName] = useState("Felhasználó");
-
-  useEffect(() => {
-    const fetchKeys = async () => {
-      const user = await getUser();
-
-      if (user.name) setName(user.name)
-        
-      setIsLoading(false);
-    };
-
-    fetchKeys();
-  }, []);
-
+  const [currentKey,setCurrentKey] = useState("Nincs kiválasztva");
+  const [showAddLockModal, setShowAddLockModal] = useState(false);
+  const [userId, setUserId] = useState("");
   const [isLoading,setIsLoading] = useState(true);
+
+  const pushToken = async () => {
+    const token = await registerForPushNotificationsAsync();
+    await postPushToken(userId, token);
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchKeys = async () => {
+        const user = await getUser();
+        const key = await getCurrentKey();
+        if (key) setCurrentKey(key.name);
+        if(user.id) setUserId(user.id);
+        if (user.name) setName(user.name)
+        setIsLoading(false);
+      };
+      fetchKeys();
+      pushToken();
+    }, [])
+  );
 
   return (
         <SafeAreaView className='bg-tertiary h-full'>
@@ -59,7 +72,7 @@ const Home = () => {
 
               </View>
 
-              <TouchableOpacity className='mt-2 w-full h-[15%] bg-secondary rounded-3xl flex-row items-center'>
+              <TouchableOpacity onPress={() => setShowAddLockModal(true)} className='mt-2 w-full h-[15%] bg-secondary rounded-3xl flex-row items-center'>
                 <Image
                   source={icons.lock}
                   className='w-24 h-24 ml-4'
@@ -74,17 +87,35 @@ const Home = () => {
                 />
                 <View className='justify-center items-center'>
                   <Text className='font-psemibold text-xl'>Jelenleg kiválasztott kulcs:</Text>
-                  <Text className='text-xl'>Test</Text>
+                  <Text className='text-xl'>{currentKey}</Text>
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity className='mt-2 w-full h-[15%] bg-secondary rounded-3xl flex-row items-center'>
+              <TouchableOpacity onPress={() => {router.push('/(log)/log')}} className='mt-2 w-full h-[15%] bg-secondary rounded-3xl flex-row items-center'>
                 <Image
                   source={icons.log}
                   className='w-20 h-20 ml-4'
                 />
                 <Text className='ml-5 font-psemibold text-2xl'>Naplók megtekintése</Text>
               </TouchableOpacity>
+
+              <Modal animationType="fade" transparent={true} visible={showAddLockModal}>
+                <View className='justify-center items-center flex-1 bg-black/50'>
+                  <View className='bg-secondary px-6 py-4 rounded-2xl shadow-lg min-w-[80%] min-h-[30%]'>
+                    <Text className="font-psemibold text-2xl">Zár regisztrálása </Text>
+                    <FromField 
+                      title="" 
+                      placeholder="Zár kódja" 
+                      value="" 
+                      handleChangeText={() => {}} 
+                      otherStyles="" 
+                      keyboardType="default" 
+                    />
+                    <CustomButton handlePress={() => {}} title="Regisztrálás" containerStyles={"bg-secondary border-2 mt-10 mb-3"} textStyles={""} isLoading={false}/>
+                    <CustomButton handlePress={() => setShowAddLockModal(false)} title="Mégsem" containerStyles={"bg-secondary border-2"} textStyles={""} isLoading={false}/>
+                  </View>
+                </View>
+              </Modal>
 
             </View>
           </ScrollView>
@@ -93,7 +124,3 @@ const Home = () => {
 }
 
 export default Home
-
-function getUserKeys(id: any) {
-  throw new Error('Function not implemented.')
-}

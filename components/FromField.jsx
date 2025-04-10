@@ -17,10 +17,10 @@ export const FromField = ({title, value, placeholder, handleChangeText, otherSty
             placeholder={placeholder}
             placeholderTextColor="#7b7b8b"
             onChangeText={handleChangeText}
-            secureTextEntry={(title === 'Password' || title === 'Password Again') && !showPassword}
+            secureTextEntry={(title === 'Password' || title === 'Password Again' || title === 'New Password') && !showPassword}
           />
 
-          {(title === 'Password' || title === 'Password Again') && (
+          {(title === 'Password' || title === 'Password Again' || title === 'New Password') && (
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                <Image source={!showPassword ? icons.eye : icons.eyeHide} className='w-6 h-6'
                resizeMode='contain'
