@@ -41,7 +41,7 @@ const SignUp = () => {
               resizeMode='contain'
               className='w-[200px] h-[100px]'
             />
-            <View className='w-full bg-primary rounded-2xl h-[58%]'>
+            <View className='w-full bg-primary rounded-2xl'>
             <FromField
               title="Email"
               value={from.email}
@@ -69,7 +69,7 @@ const SignUp = () => {
             <FromField
               title="Name"
               value={from.name}
-              otherStyles="mt-7"
+              otherStyles="mt-7 mb-7"
               handleChangeText={(e) => setForm({
                 ...from, name: e
               })}

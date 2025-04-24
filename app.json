@@ -38,6 +38,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "f102902f-6c80-493a-a04d-06af22121995"
+      }
+    },
+    "owner": "norduk"
   }
 }

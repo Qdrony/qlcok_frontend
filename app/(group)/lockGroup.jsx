@@ -113,7 +113,7 @@ const lockGroup = () => {
               placeholder={"Keresés..."}
             />
             <TouchableOpacity onPress={() => setShowAddGroup(true)}>
-              <View className="bg-primary w-16 h-16 rounded-full items-center justify-center mt-4">
+              <View className="bg-primary w-14 h-14 rounded-full items-center justify-center mt-4 ml-[40%]">
                 <Image
                   source={icons.plus}
                   className="w-10 h-10"

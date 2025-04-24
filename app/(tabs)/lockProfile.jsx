@@ -55,10 +55,10 @@ const lockProfile = () => {
                                      className='w-full h-[15%] bg-primary rounded-3xl flex-row items-center'>
                                     <Image
                                         source={icons.key}
-                                        className='w-16 h-16 ml-5'
+                                        className='w-14 h-14 ml-2'
                                     />
-                                    <View className='ml-2 justify-center items-center'>
-                                        <Text className='font-psemibold text-xl'>Kiosztott kulcsok megtekintése</Text>
+                                    <View className='ml-1 justify-center items-center'>
+                                        <Text className='font-psemibold text-lg'>Kiosztott kulcsok megtekintése</Text>
                                     </View>
                                 </TouchableOpacity>
 
@@ -69,10 +69,10 @@ const lockProfile = () => {
                                      className='w-full h-[15%] bg-primary rounded-3xl flex-row items-center'>
                                     <Image
                                         source={icons.key}
-                                        className='w-16 h-16 ml-5'
+                                        className='w-14 h-14 ml-2'
                                     />
                                     <View className='ml-2 justify-center items-center'>
-                                        <Text className='font-psemibold text-xl'>Kulcs kiosztása</Text>
+                                        <Text className='font-psemibold text-lg'>Kulcs kiosztása</Text>
                                     </View>
                                 </TouchableOpacity>
 
@@ -82,9 +82,9 @@ const lockProfile = () => {
                                     })} className='w-full h-[15%] bg-secondary rounded-3xl flex-row items-center'>
                                     <Image
                                         source={icons.group}
-                                        className='w-16 h-16 ml-4'
+                                        className='w-14 h-14 ml-3'
                                     />
-                                    <Text className='ml-2 font-psemibold text-2xl'>Csoportok megtekintése</Text>
+                                    <Text className='ml-2 font-psemibold text-xl'>Csoportok megtekintése</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity onPress={() => router.push({
@@ -93,9 +93,9 @@ const lockProfile = () => {
                                     })} className='w-full h-[15%] bg-secondary rounded-3xl flex-row items-center'>
                                     <Image
                                         source={icons.log}
-                                        className='w-16 h-16 ml-4'
+                                        className='w-14 h-14 ml-3'
                                     />
-                                    <Text className='ml-2 font-psemibold text-2xl'>Napló megtekintése</Text>
+                                    <Text className='ml-2 font-psemibold text-xl'>Napló megtekintése</Text>
                                 </TouchableOpacity>
 
                             </View>) : (<Text>Betöltés...</Text>)}

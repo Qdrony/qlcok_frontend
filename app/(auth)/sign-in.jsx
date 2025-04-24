@@ -22,18 +22,19 @@ const SignIn = () => {
     {
       router.push("/(tabs)/home");
     }
+    setSubmitting(false);
   }
 
   return (
-    <SafeAreaView className='bg-tertiary h-full'>
-      <ScrollView>
-        <View className='w-full justify-center min-h-[85vh] px-4 my-6'>
+    <SafeAreaView className='bg-tertiary h-full w-full'>
+      <ScrollView className='w-full h-full'>
+        <View className='w-full min-h-[85vh] justify-center px-4 my-6'>
           <Image
             source={images.qlockgreen}
             resizeMode='contain'
             className='w-[200px] h-[100px]'
           />
-          <View className='w-full bg-primary rounded-2xl h-[30%]'>
+          <View className='w-full bg-primary rounded-2xl'>
           <FromField
             title="Email"
             value={from.email}
@@ -45,7 +46,7 @@ const SignIn = () => {
           <FromField
             title="Password"
             value={from.password}
-            otherStyles="mt-7"
+            otherStyles="mt-7 mb-7"
             handleChangeText={(e) => setForm({
               ...from, password: e
             })}

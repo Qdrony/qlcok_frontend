@@ -6,14 +6,14 @@ import {icons} from '../../constants'
 
 const TabIcon = ({icon,color,name,focused}) => {
   return(
-    <View className='items-center justify-center gap-1' style={{marginTop: 15}}>
+    <View className='items-center justify-center gap-1 w-full h-full' style={{marginTop: 15}}>
       <Image
         source={icon}
         resizeMode='contain'
         tintColor={color}
         className='w-6 h-6'
       />
-      <Text className={`text-xs text-center`} style={{color: color}}>{name}</Text>
+      <Text className='w-16 text-xs text-center' style={{color: color}}>{name}</Text>
     </View>
   )
 }

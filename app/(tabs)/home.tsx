@@ -7,10 +7,11 @@ import {CustomButton} from '../../components/CustomButton'
 import { router } from 'expo-router'
 import { getCurrentKey, getUser } from '../../lib/services/secureStore'
 import { useFocusEffect } from '@react-navigation/native'
-import { registerForPushNotificationsAsync } from '../../lib/services/notification'
-import { postPushToken } from '../../lib/api/users'
+import useNotificationHandlers, { registerForPushNotificationsAsync } from '@/lib/services/notification';
 
 const Home = () => {
+
+  useNotificationHandlers();
 
   const [name,setName] = useState("Felhasználó");
   const [currentKey,setCurrentKey] = useState("Nincs kiválasztva");
@@ -19,8 +20,7 @@ const Home = () => {
   const [isLoading,setIsLoading] = useState(true);
 
   const pushToken = async () => {
-    const token = await registerForPushNotificationsAsync();
-    await postPushToken(userId, token);
+    await registerForPushNotificationsAsync(userId);
   }
 
   useFocusEffect(
@@ -56,7 +56,7 @@ const Home = () => {
                         source={icons.key}
                         className='w-[20%] max-h-10 ml-[4%] mt-[4%]'
                       />
-                      <Text className='ml-4 mt-4 font-psemibold'>Birtokolt kulcsok</Text>
+                      <Text className='ml-1 mt-4 font-psemibold text-base'>Birtokolt kulcsok</Text>
                     </View>
                 </TouchableOpacity>
 
@@ -66,7 +66,7 @@ const Home = () => {
                           source={icons.lock}
                           className='w-[20%] max-h-11 ml-[4%] mt-[4%]'
                         />
-                        <Text className='ml-4 mt-4 font-psemibold'>Birtokolt zárak</Text>
+                        <Text className='ml-2 mt-4 font-psemibold text-base'>Birtokolt zárak</Text>
                     </View>
                 </TouchableOpacity>
 
@@ -75,7 +75,7 @@ const Home = () => {
               <TouchableOpacity onPress={() => setShowAddLockModal(true)} className='mt-2 w-full h-[15%] bg-secondary rounded-3xl flex-row items-center'>
                 <Image
                   source={icons.lock}
-                  className='w-24 h-24 ml-4'
+                  className='w-20 h-20 ml-2'
                 />
                 <Text className='ml-5 font-psemibold text-2xl'>Zár regisztrálása</Text>
               </TouchableOpacity>
@@ -83,7 +83,7 @@ const Home = () => {
               <TouchableOpacity className='mt-2 w-full h-[15%] bg-primary rounded-3xl flex-row items-center'>
                 <Image
                   source={icons.key}
-                  className='w-24 h-24 ml-5'
+                  className='w-20 h-20 ml-2'
                 />
                 <View className='justify-center items-center'>
                   <Text className='font-psemibold text-xl'>Jelenleg kiválasztott kulcs:</Text>
@@ -94,9 +94,9 @@ const Home = () => {
               <TouchableOpacity onPress={() => {router.push('/(log)/log')}} className='mt-2 w-full h-[15%] bg-secondary rounded-3xl flex-row items-center'>
                 <Image
                   source={icons.log}
-                  className='w-20 h-20 ml-4'
+                  className='w-20 h-20 ml-2'
                 />
-                <Text className='ml-5 font-psemibold text-2xl'>Naplók megtekintése</Text>
+                <Text className='ml-2 font-psemibold text-2xl'>Naplók megtekintése</Text>
               </TouchableOpacity>
 
               <Modal animationType="fade" transparent={true} visible={showAddLockModal}>

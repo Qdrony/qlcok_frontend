@@ -18,8 +18,10 @@ export default function HomeScreen() {
         router.push("/(tabs)/home");
       }
     }
-
+    
+    
   }
+
   return (
     <SafeAreaView className='bg-tertiary h-full'>
       <ScrollView contentContainerStyle={{height: '100%'}}>
