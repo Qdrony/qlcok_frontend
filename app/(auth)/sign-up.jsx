@@ -87,7 +87,7 @@ const SignUp = () => {
               <Text className='text-primary text-lg font-pregular'>
                 Van már fiókod?
               </Text>
-              <Link href="/(tabs)/home" className='text-secondary font-pregular text-lg'>Belépés</Link>
+              <Link href="/(auth)/sign-in" className='text-secondary font-pregular text-lg'>Belépés</Link>
             </View>
   
           </View>

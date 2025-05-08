@@ -1,26 +1,65 @@
 import { router } from 'expo-router';
 import { Image, View, Text, ScrollView, StatusBar } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {images} from '../constants'
 import {CustomButton} from '../components/CustomButton'
-import { getUser } from '@/lib/services/secureStore';
-import {loginUser} from '../lib/api/auth' 
+import { getEmail, getPassword, getUser } from '@/lib/services/secureStore';
+import {loginUser} from '../lib/api/auth'
+import { PermissionsAndroid, Platform } from 'react-native';
+
+
 
 export default function HomeScreen() {
+
   const loggedIn = async () => {
-    if(getUser() === null) {
+    const user = await getUser();
+    console.log(user);
+    
+    if(user === null) {
       return;
     }else {
-      const user = await getUser();
-      const response = await loginUser(user.email, user.password);
+      const email = await getEmail();
+      const password = await getPassword();
+      const response = await loginUser(email,password);
       if(response.success === true)
       {
         router.push("/(tabs)/home");
       }
     }
-    
-    
   }
+
+  async function requestBlePermissions() {
+      if (Platform.OS === 'android') {
+        try {
+          const granted = await PermissionsAndroid.requestMultiple([
+            PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+            PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            PermissionsAndroid.PERMISSIONS.BLUETOOTH_ADVERTISE
+          ]);
+    
+          const allGranted = Object.values(granted).every(
+            (status) => status === PermissionsAndroid.RESULTS.GRANTED
+          );
+    
+          return allGranted;
+        } catch (err) {
+          console.warn('Permission error:', err);
+          return false;
+        }
+      }
+      return true;
+  }
+
+  useEffect(() => {
+    requestBlePermissions().then((granted) => {
+      if (!granted) {
+        console.log("Bluetooth jogosultság szükséges", "Kérlek engedélyezd a BLE működéséhez.");
+      }
+    });
+    loggedIn();
+  }, []);
 
   return (
     <SafeAreaView className='bg-tertiary h-full'>

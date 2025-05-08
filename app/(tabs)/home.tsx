@@ -5,7 +5,7 @@ import {images, icons} from '../../constants'
 import {FromField} from '../../components/FromField'
 import {CustomButton} from '../../components/CustomButton'
 import { router } from 'expo-router'
-import { getCurrentKey, getUser } from '../../lib/services/secureStore'
+import { getCurrentKey, getUser, deleteToken, deleteUser, deleteEmail, deletePassword, deleteCurrentKey, deleteOfflineKeys } from '../../lib/services/secureStore'
 import { useFocusEffect } from '@react-navigation/native'
 import useNotificationHandlers, { registerForPushNotificationsAsync } from '@/lib/services/notification';
 
@@ -42,12 +42,31 @@ const Home = () => {
         <SafeAreaView className='bg-tertiary h-full'>
           <ScrollView>
             <View className='w-full min-h-[85vh] px-4 my-6'>
-              <Image
-                source={images.qlockgreen}
-                resizeMode='contain'
-                className='w-[200px] h-[100px]'
-              />
+              <View className='flex-row items-center justify-between'>
+                <Image
+                  source={images.qlockgreen}
+                  resizeMode='contain'
+                  className='w-[200px] h-[100px]'
+                />
+                <TouchableOpacity onPress={() => {
+                    deleteUser();
+                    deleteEmail();
+                    deletePassword();
+                    deleteCurrentKey();
+                    deleteToken();
+                    deleteOfflineKeys();
+                    router.push('/(auth)/sign-in');
+                  }} 
+                  >
+                  <Image
+                    source={icons.logoutGreen}
+                    resizeMode='contain'
+                    className='w-10 h-10 mr-2 mt-4'
+                  />
+                </TouchableOpacity>
+              </View>
               <Text className='text-primary text-2xl font-pbold'>Üdvözlünk {name}!</Text>
+
               <View className='flex-row'>
 
                 <TouchableOpacity onPress={() => {router.push('/(tabs)/key')}} className='w-[49%] h-60 mr-[2%] bg-primary rounded-3xl'>

@@ -7,12 +7,17 @@ import EmptyState from '../../components/EmptyState'
 import KeyCard from '../../components/KeyCard'
 import CustomButton from '../../components/CustomButton'
 import { getUserKeys } from '../../lib/api/keys'
-import { getUser, saveCurrentKey } from '../../lib/services/secureStore'
+import { getOfflineKeys, getUser, saveCurrentKey, saveOfflineKeys } from '../../lib/services/secureStore'
+import { updateNfcPayload } from '../../lib/services/nfcservicesHCE'
+import NetInfo from "@react-native-community/netinfo";
+import { startBle, stopBle } from '../../lib/services/bleAdvertiser'
+import { requestBluetoothPermissions } from '../../lib/services/blePeripheral'
 
 const Key = () => {
 
   const [keys, setKeys] = useState([]);
   const [name,setName] = useState("Felhasználó");
+  const [userId,setUserId] = useState(null);
   const [selectedKey,setSelectedKey] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const modalScreen = (keyId) => {
@@ -25,13 +30,30 @@ const Key = () => {
     const user = await getUser();
     const data = await getUserKeys(user.id);
     if (data) setKeys(data)
+    await saveOfflineKeys(data);
     if (user.name) setName(user.name)
+    if (user.id) setUserId(user.id)
             
     setIsLoading(false);
   };
 
+  const fetchOfflineKeys = async () => {
+    const user = await getUser();
+    const data = await getOfflineKeys();
+    if (data) setKeys(data)
+    if (user.name) setName(user.name)
+    if (user.id) setUserId(user.id)
+  }
+
   useEffect(() => {
-    fetchKeys();
+    NetInfo.fetch().then(state => {
+      if (state.isConnected) {
+        fetchKeys();
+      } else {
+        fetchOfflineKeys();
+        console.error('No internet connection, loading offline keys.');
+      }
+    });
   }, []);
 
   const [isLoading,setIsLoading] = useState(true);
@@ -101,8 +123,16 @@ const Key = () => {
                 <Text className='font-psemibold text-xl'>Zár neve: {selectedKey.lockName}</Text>
                 <Text className='font-psemibold text-xl'>Létrehozás dátuma: {selectedKey.createdAt.slice(0,10)}</Text>
 
-                <CustomButton handlePress={() => setModalVisible(false)} title="Bezárás"/>
-                <CustomButton handlePress={() => saveCurrentKey(selectedKey)} title={"Kulcs használata"}/>
+                <CustomButton handlePress={() => {
+                    setModalVisible(false)>
+                    stopBle(); //Bluetooth hirdetés leállítása
+                  }} title="Bezárás"/>
+                <CustomButton handlePress={() => {
+                    saveCurrentKey(selectedKey);
+                    updateNfcPayload(userId, selectedKey.id); //HCE NFC
+                    startBle(userId, selectedKey.id); //Bluetooth hirdetés indítása
+                  }} 
+                  title={"Kulcs használata"}/>
               </>
             ) : (
               <Text>Betöltés...</Text>

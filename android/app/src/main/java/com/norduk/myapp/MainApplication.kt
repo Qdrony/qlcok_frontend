@@ -16,6 +16,13 @@ import com.facebook.soloader.SoLoader
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
 
+import com.norduk.myapp.nfc.NfcPayloadModule
+import com.facebook.react.bridge.NativeModule
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.uimanager.ViewManager
+import com.norduk.myapp.ble.BleAdvertiserPackage
+
+
 class MainApplication : Application(), ReactApplication {
 
   override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(
@@ -25,6 +32,16 @@ class MainApplication : Application(), ReactApplication {
             val packages = PackageList(this).packages
             // Packages that cannot be autolinked yet can be added manually here, for example:
             // packages.add(new MyReactNativePackage());
+            packages.add(object : ReactPackage {
+              override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
+                  return listOf(NfcPayloadModule(reactContext))
+              }
+
+              override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
+                  return emptyList()
+              }
+            })
+            packages.add(BleAdvertiserPackage())
             return packages
           }
 
