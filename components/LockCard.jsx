@@ -5,7 +5,7 @@ import { icons } from '../constants'
 const LockCard = ({item, fn}) => {
   return (
     <TouchableOpacity 
-      className='w-full h-16 rounded-2xl bg-secondary flex-row items-center gap-x-4'
+      className='w-full h-16 rounded-2xl bg-secondary flex-row items-center gap-x-4 mb-3'
       onPress={fn}
     >
       <Image 

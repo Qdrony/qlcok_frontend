@@ -23,6 +23,10 @@ const lockKeys = () => {
   const [remainingUses,setReamininguses] = useState(0);
   const [date,setDate] = useState("");
   const [show, setShow] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const filteredKeys = keys.filter(key =>
+    key.userName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const params = useLocalSearchParams();
   const selectedLockId = params.id;
@@ -82,7 +86,7 @@ const lockKeys = () => {
     <SafeAreaView className='bg-tertiary h-full px-4'>
 
       <FlatList
-        data={keys}
+        data={filteredKeys}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({item}) => (
           <KeyCard item={item} fn={() => modalScreen(item.id)} del={true} delFn={() => deleteKeyFn(item.id)}/>
@@ -102,6 +106,8 @@ const lockKeys = () => {
             <SearchInput
               otherStyles={'bg-primary'}
               placeholder={"Keresés..."}
+              value={searchQuery}
+              handleChangeText={setSearchQuery}
             />
           </View>
         )}

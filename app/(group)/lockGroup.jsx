@@ -23,6 +23,11 @@ const lockGroup = () => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [groupName, setGroupName] = useState("");
   const [groupDesc, setGroupDesc] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
+  const filteredGroups = groups.filter(group =>
+    group.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
 
   const params = useLocalSearchParams();
   const selectedLockId = params.id;
@@ -91,7 +96,7 @@ const lockGroup = () => {
     <SafeAreaView className='bg-tertiary h-full px-4'>
 
       <FlatList
-        data={groups}
+        data={filteredGroups}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({item}) => (
         <GroupCard item={item} fn={() => modalScreen(item.id)} del={true} delFn={() => {deleteGroup(item.id)}}/>
@@ -111,6 +116,8 @@ const lockGroup = () => {
             <SearchInput
               otherStyles={'bg-primary'}
               placeholder={"Keresés..."}
+              value={searchQuery}
+              handleChangeText={setSearchQuery}
             />
             <TouchableOpacity onPress={() => setShowAddGroup(true)}>
               <View className="bg-primary w-14 h-14 rounded-full items-center justify-center mt-4 ml-[40%]">

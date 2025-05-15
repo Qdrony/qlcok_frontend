@@ -23,12 +23,16 @@ const addKey = () => {
   const [showAddKeyToGroupModal,setShowAddKeyToGroupModal] = useState(false);
   const [groups, setGroups] = useState([]);
   const [selectedGroupId, setSelectedGroupId] = useState(0);
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
+  const [showTime, setShowTime] = useState(false);
+  const [showTime2, setShowTime2] = useState(false);
 
   const addKeytoGroup = async () => {
     if(selectedGroupId === 0) return
     const users = await getUsersFromGroup(selectedGroupId);
     for (const user of users) {
-      await postKeyCreate(user.id,selectedLockId,date,remainingUses,lock.name + "'s key");
+      await postKeyCreate(user.id,selectedLockId,date,remainingUses,lock.name + "'s key",startTime,endTime);
     }
     setShowAddKeyToGroupModal(false);
   }
@@ -47,6 +51,21 @@ const addKey = () => {
     setReaminingUses(value)
   };
 
+  const onChangeTime = (event, selectedStartTime) => {
+    setShowTime(false);
+    if (selectedStartTime) {
+      setStartTime(selectedStartTime.toString().slice(16,21));
+    }
+    setShowTime2(true);
+  };
+
+  const onChangeTime2 = (event, selectedEndTime) => {
+    setShowTime2(false);
+    if (selectedEndTime) {
+      setEndTime(selectedEndTime.toString().slice(16,21));
+    }
+  };
+
   const onChange = (event, selectedDate) => {
     setShow(false); 
     if (selectedDate) {
@@ -61,7 +80,7 @@ const addKey = () => {
     if(selectedUsers.length === 0) return
 
     for (const user of selectedUsers) {
-      await postKeyCreate(user.id,selectedLockId,date,remainingUses,lock.name + "'s key");
+      await postKeyCreate(user.id,selectedLockId,date,remainingUses,lock.name + "'s key",startTime,endTime);
     }
     router.push({
       pathname: "../(tabs)/lockProfile",
@@ -94,7 +113,7 @@ const addKey = () => {
 
 
           <Modal animationType="fade" transparent={true} visible={showAddKeyModal}>
-            <View className='justify-center items-center flex-1 bg-black/50'>
+            <ScrollView>
               <View className='bg-secondary px-6 py-4 rounded-2xl shadow-lg min-w-[50%] min-h-[40%]'>
                 
                     <View className='flex-row items-center mb-5'>
@@ -106,10 +125,12 @@ const addKey = () => {
                       <Text className='font-psemibold text-xl ml-5'>Kulcs beállítása</Text>
                     </View>
            
-                    <Text className='font-psemibold text-xl'>Lejárati idő: {date ? date.toString().slice(0,24) : "állandó"}</Text>
-                    <View className="flex-row gap-x-2">
-                      <CustomButton title={"Dátum beállítása"} containerStyles={"border-2 w-[50%] bg-secondary"} handlePress={() => setShow(true)}/>
-                      <CustomButton title={"Állandó"} containerStyles={"border-2 w-[30%] bg-secondary"} handlePress={() => setDate(null)}/>
+                    <View className='border-2 rounded-2xl p-4 mb-4'>
+                      <Text className='font-psemibold text-xl'>Lejárati idő: {date ? date.toString().slice(0,24) : "Állandó"}</Text>
+                      <View className="flex-row gap-x-2">
+                        <CustomButton title={"Dátum beállítása"} containerStyles={"border-2 w-[50%] bg-secondary"} handlePress={() => setShow(true)}/>
+                        <CustomButton title={"Állandó"} containerStyles={"border-2 w-[30%] bg-secondary"} handlePress={() => setDate(null)}/>
+                      </View>
                     </View>
                     {show && (
                       <DateTimePicker
@@ -121,8 +142,42 @@ const addKey = () => {
                       />
                     )}
 
-                    <Text className="font-psemibold text-xl mt-5">Felhasználhatóság: {remainingUses}</Text>
-                    <NumberStepper initialValue={0} min={-1} max={50} step={1} onValueChange={handleValueChange}/>
+                    <View className='border-2 rounded-2xl mb-4 items-center'>
+                      <Text className="font-psemibold text-xl mt-5">Felhasználhatóság: {remainingUses}</Text>
+                      <NumberStepper initialValue={1} min={-1} max={50} step={1} onValueChange={handleValueChange}/>
+                    </View>
+
+                    <View className='border-2 rounded-2xl mb-4 items-center'>
+                      <Text className='text-xl font-psemibold'>Nyitási idő: </Text>
+                      <Text className="text-xl font-psemibold">{startTime === null || endTime === null ? "Nincs" : startTime + " - " + endTime}</Text>
+                      <View className="flex-row gap-x-2 mb-2">
+                        <CustomButton title={"Időablak beállítása"} containerStyles={"border-2 w-[50%] bg-secondary"} handlePress={() => {
+                            setShowTime(true);
+                          }}/>
+                        <CustomButton title={"Nincs"} containerStyles={"border-2 w-[30%] bg-secondary"} handlePress={() => {
+                            setStartTime(null);
+                            setEndTime(null);
+                          }}/>
+                      </View>
+                    </View>
+                    {showTime && (
+                      <DateTimePicker
+                        value={new Date()}
+                        mode="time"
+                        display="default"
+                        onChange={onChangeTime}
+                        is24Hour={true}
+                      />
+                    )}
+                    {showTime2 && (
+                      <DateTimePicker
+                        value={new Date()}
+                        mode="time"
+                        display="default"
+                        onChange={onChangeTime2}
+                        is24Hour={true}
+                      />
+                    )}
 
                     <Users onUsersSelected={setSelectedUsers}/>
 
@@ -130,7 +185,7 @@ const addKey = () => {
                     <CustomButton handlePress={() => setShowAddKeyModal(false)} title="Mégsem" containerStyles={"bg-secondary border-2"}/>
 
               </View>
-            </View>
+            </ScrollView>
           </Modal>
 
           <Modal animationType="fade" transparent={true} visible={showAddKeyToGroupModal}>
@@ -146,10 +201,12 @@ const addKey = () => {
                       <Text className='font-psemibold text-xl ml-5'>Kulcs beállítása</Text>
                     </View>
            
-                    <Text className='font-psemibold text-xl'>Lejárati idő: {date ? date.toString().slice(0,24) : "állandó"}</Text>
-                    <View className="flex-row gap-x-2">
-                      <CustomButton title={"Dátum beállítása"} containerStyles={"border-2 w-[50%] bg-secondary"} handlePress={() => setShow(true)}/>
-                      <CustomButton title={"Állandó"} containerStyles={"border-2 w-[30%] bg-secondary"} handlePress={() => setDate(null)}/>
+                    <View className='border-2 rounded-2xl p-4 mb-4'>
+                      <Text className='font-psemibold text-xl'>Lejárati idő: {date ? date.toString().slice(0,24) : "Állandó"}</Text>
+                      <View className="flex-row gap-x-2">
+                        <CustomButton title={"Dátum beállítása"} containerStyles={"border-2 w-[50%] bg-secondary"} handlePress={() => setShow(true)}/>
+                        <CustomButton title={"Állandó"} containerStyles={"border-2 w-[30%] bg-secondary"} handlePress={() => setDate(null)}/>
+                      </View>
                     </View>
                     {show && (
                       <DateTimePicker
@@ -161,8 +218,42 @@ const addKey = () => {
                       />
                     )}
 
-                    <Text className="font-psemibold text-xl mt-5">Felhasználhatóság: {remainingUses}</Text>
-                    <NumberStepper initialValue={0} min={-1} max={50} step={1} onValueChange={handleValueChange}/>
+                    <View className='border-2 rounded-2xl mb-4 items-center'>
+                      <Text className="font-psemibold text-xl mt-5">Felhasználhatóság: {remainingUses}</Text>
+                      <NumberStepper initialValue={1} min={-1} max={50} step={1} onValueChange={handleValueChange}/>
+                    </View>
+
+                    <View className='border-2 rounded-2xl mb-4 items-center'>
+                      <Text className='text-xl font-psemibold'>Nyitási idő: </Text>
+                      <Text className="text-xl font-psemibold">{startTime === null || endTime === null ? "Nincs" : startTime + " - " + endTime}</Text>
+                      <View className="flex-row gap-x-2 mb-2">
+                        <CustomButton title={"Időablak beállítása"} containerStyles={"border-2 w-[50%] bg-secondary"} handlePress={() => {
+                            setShowTime(true);
+                          }}/>
+                        <CustomButton title={"Nincs"} containerStyles={"border-2 w-[30%] bg-secondary"} handlePress={() => {
+                            setStartTime(null);
+                            setEndTime(null);
+                          }}/>
+                      </View>
+                    </View>
+                    {showTime && (
+                      <DateTimePicker
+                        value={new Date()}
+                        mode="time"
+                        display="default"
+                        onChange={onChangeTime}
+                        is24Hour={true}
+                      />
+                    )}
+                    {showTime2 && (
+                      <DateTimePicker
+                        value={new Date()}
+                        mode="time"
+                        display="default"
+                        onChange={onChangeTime2}
+                        is24Hour={true}
+                      />
+                    )}
 
                     <Dropdown selectedLockId={selectedLockId} groups={groups} onSelectedGroupId={setSelectedGroupId}/>
 

@@ -9,8 +9,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Users = ({ onUsersSelected }) => {
 
-    const [users,setUsers] = useState(null);
+    const [users,setUsers] = useState([]);
     const [selectedUsers,setSelectedUsers] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const filteredUsers = users.filter(user =>
+        user.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
 
     const fetchUsers = async () => {
         const users = await getUsers();
@@ -38,8 +43,8 @@ const Users = ({ onUsersSelected }) => {
 
   return (
         <FlatList
-        className="border-2 rounded-2xl p-2"
-            data={users}
+        className="border-2 rounded-2xl p-2 min-h-5"
+            data={filteredUsers}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({item}) => (
                 <UserCard 
@@ -57,6 +62,8 @@ const Users = ({ onUsersSelected }) => {
                     <SearchInput
                         otherStyles={'bg-secondary'}
                         placeholder={"Keresés..."}
+                        value={searchQuery}
+                        handleChangeText={setSearchQuery}
                     />
                 </View>
             )}

@@ -11,7 +11,6 @@ import { getOfflineKeys, getUser, saveCurrentKey, saveOfflineKeys } from '../../
 import { updateNfcPayload } from '../../lib/services/nfcservicesHCE'
 import NetInfo from "@react-native-community/netinfo";
 import { startBle, stopBle } from '../../lib/services/bleAdvertiser'
-import { requestBluetoothPermissions } from '../../lib/services/blePeripheral'
 
 const Key = () => {
 
@@ -20,6 +19,12 @@ const Key = () => {
   const [userId,setUserId] = useState(null);
   const [selectedKey,setSelectedKey] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredKeys = keys.filter(key =>
+    key.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const modalScreen = (keyId) => {
     const foundKey = keys.find(key => key.id === keyId);
     setSelectedKey(foundKey);
@@ -70,7 +75,7 @@ const Key = () => {
     <SafeAreaView className='bg-tertiary h-full px-4'>
 
       <FlatList
-        data={keys}
+        data={filteredKeys}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({item}) => (
           <KeyCard item={item} fn={() => modalScreen(item.id)}/>
@@ -90,6 +95,8 @@ const Key = () => {
             <SearchInput
               otherStyles={'bg-primary'}
               placeholder={"Keresés..."}
+              value={searchQuery}
+              handleChangeText={setSearchQuery}
             />
           </View>
         )}
@@ -119,20 +126,22 @@ const Key = () => {
 
                 <Text className='font-psemibold text-xl'>Adatok:</Text>                
                 <Text className='font-psemibold text-xl'>Használhatóság: {selectedKey.remainingUses === -1 ? 'Állandó' : (selectedKey.remainingUses + 'db')}</Text>
-                <Text className='font-psemibold text-xl'>Lejárati idő: {selectedKey.remainingUses === -1 ? 'Nincs' : (selectedKey.expirationDate)}</Text>
+                <Text className='font-psemibold text-xl'>Lejárati idő: {selectedKey.expirationDate === null ? 'Nincs' : (selectedKey.expirationDate)}</Text>
                 <Text className='font-psemibold text-xl'>Zár neve: {selectedKey.lockName}</Text>
+                <Text className='font-psemibold text-xl'>Nyitási idő: {selectedKey.startTime === null ? 'Nincs' : (selectedKey.startTime + " - " + selectedKey.endTime)}</Text>
                 <Text className='font-psemibold text-xl'>Létrehozás dátuma: {selectedKey.createdAt.slice(0,10)}</Text>
 
-                <CustomButton handlePress={() => {
-                    setModalVisible(false)>
-                    stopBle(); //Bluetooth hirdetés leállítása
-                  }} title="Bezárás"/>
                 <CustomButton handlePress={() => {
                     saveCurrentKey(selectedKey);
                     updateNfcPayload(userId, selectedKey.id); //HCE NFC
                     startBle(userId, selectedKey.id); //Bluetooth hirdetés indítása
                   }} 
-                  title={"Kulcs használata"}/>
+                  title={"Kulcs használata"} containerStyles={"border-2 mt-4"}/>
+                <CustomButton handlePress={() => {
+                    setModalVisible(false)>
+                    stopBle(); //Bluetooth hirdetés leállítása
+                  }} title="Bezárás" containerStyles={"border-2 mt-2"}/>
+                
               </>
             ) : (
               <Text>Betöltés...</Text>

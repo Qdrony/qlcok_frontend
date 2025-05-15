@@ -4,17 +4,32 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {images} from '../constants'
 import {CustomButton} from '../components/CustomButton'
-import { getEmail, getPassword, getUser } from '@/lib/services/secureStore';
+import { deleteOfflineKeys, getEmail, getLastLoginTime, getPassword, getUser } from '@/lib/services/secureStore';
 import {loginUser} from '../lib/api/auth'
 import { PermissionsAndroid, Platform } from 'react-native';
-
+import NetInfo from "@react-native-community/netinfo";
 
 
 export default function HomeScreen() {
 
+  const isLoginValid = async () => {
+    const lastLogin = await getLastLoginTime();
+    if (!lastLogin) return false;
+    const user = await getUser();
+    if (user === null) return false;
+
+    const lastLoginDate = new Date(lastLogin);
+    const now = new Date();
+    const diff = now.getTime() - lastLoginDate.getTime();
+
+    const hours = diff / (1000 * 60 * 60);
+    const result = hours <= 24;
+    console.log(`Last login was ${hours} hours ago. Valid: ${result}`);
+    
+    return result;
+  }
   const loggedIn = async () => {
     const user = await getUser();
-    console.log(user);
     
     if(user === null) {
       return;
@@ -53,12 +68,27 @@ export default function HomeScreen() {
   }
 
   useEffect(() => {
-    requestBlePermissions().then((granted) => {
+    const init = async () => {
+      const granted = await requestBlePermissions();
       if (!granted) {
         console.log("Bluetooth jogosultság szükséges", "Kérlek engedélyezd a BLE működéséhez.");
       }
-    });
-    loggedIn();
+  
+      const netState = await NetInfo.fetch();
+      if (netState.isConnected) {
+        loggedIn();
+      } else {
+        const valid = await isLoginValid();
+        if (valid) {
+          router.push("/(tabs)/home");
+        } else {
+          await deleteOfflineKeys();
+          console.error('Nincs érvényes bejelentkezés. Offline kulcsok törölve.');
+        }
+      }
+    };
+  
+    init();
   }, []);
 
   return (

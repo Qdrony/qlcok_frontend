@@ -18,18 +18,23 @@ const SignUp = () => {
     const [isSumbitting,setSubmitting] = useState(false)
   
     const sumbit = async () => {
-      if(password !== passwordAgain)
+      
+      if(from.password !== from.passwordAgain)
       {
         console.log("Nem egyeznek a jelszavak");
         setSubmitting(false);
         return;
       }
+      
       setSubmitting(true);
+      
       const response = await registerUser(from.email,from.password,from.name);
+      
       if(response.success === true)
       {
         router.push("/(auth)/sign-in");
       }
+      setSubmitting(false);
     }
   
     return (

@@ -5,7 +5,7 @@ import { icons } from '../constants'
 const KeyCard = ({item, fn, del, delFn}) => {
   return (
     <TouchableOpacity 
-      className='w-full h-16 rounded-2xl bg-primary flex-row items-center px-2 justify-between mb-2'
+      className='w-full rounded-2xl bg-primary flex-row items-center px-2 justify-between mb-2'
       onPress={fn}
     >
       <Image 
@@ -13,10 +13,16 @@ const KeyCard = ({item, fn, del, delFn}) => {
         resizeMode='contain'
         className='w-10 h-10 ml-2'
       />
-      <View className='flex-1 ml-2'>
-        <Text className='text-tertiary'>{item.name}</Text>
-        <Text className='text-tertiary'>{item.status}</Text>
-        <Text className='text-tertiary'>{item.lockName}</Text>
+      <View className='flex-1 ml-2 my-2'>
+        <Text className='text-tertiary'>Kulcs neve: {item.name}</Text>
+        <Text className='text-tertiary'>Kulcs státusza: {item.status}</Text>
+        <Text className='text-tertiary'>Zár neve: {item.lockName}</Text>
+        <Text className='text-tertiary'>Felhasználó: {item.userName}</Text>
+        {
+          console.log(item)
+        }
+        
+        {(item.startTime === null ? <></> : <Text className='text-tertiary'>Nyitási idő: {item.startTime} - {item.endTime}</Text>)}
       </View>
       {del ? (<TouchableOpacity onPress={delFn}>
                 <Image 

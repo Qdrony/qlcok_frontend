@@ -30,8 +30,8 @@
         {
           "image": "./assets/splash.png",
           "imageWidth": 200,
-          "resizeMode": "cover",
-          "backgroundColor": "#ffffff"
+          "resizeMode": "contain",
+          "backgroundColor": "#000000"
         }
       ],
       "expo-secure-store"

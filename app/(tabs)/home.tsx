@@ -1,5 +1,5 @@
 import { View, Text, Image, ScrollView, TouchableOpacity, Modal } from 'react-native'
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import {images, icons} from '../../constants'
 import {FromField} from '../../components/FromField'
@@ -8,6 +8,9 @@ import { router } from 'expo-router'
 import { getCurrentKey, getUser, deleteToken, deleteUser, deleteEmail, deletePassword, deleteCurrentKey, deleteOfflineKeys } from '../../lib/services/secureStore'
 import { useFocusEffect } from '@react-navigation/native'
 import useNotificationHandlers, { registerForPushNotificationsAsync } from '@/lib/services/notification';
+import { getCountUserKeys } from '@/lib/api/keys';
+import { getCountUserLocks } from '@/lib/api/locks';
+import { startBle, stopBle } from '@/lib/services/bleAdvertiser';
 
 const Home = () => {
 
@@ -15,9 +18,13 @@ const Home = () => {
 
   const [name,setName] = useState("Felhasználó");
   const [currentKey,setCurrentKey] = useState("Nincs kiválasztva");
+  const [currentKeyId,setCurrentKeyId] = useState(0);
   const [showAddLockModal, setShowAddLockModal] = useState(false);
+  const [activateKeyModal, setActivateKeyModal] = useState(false);
   const [userId, setUserId] = useState("");
   const [isLoading,setIsLoading] = useState(true);
+  const [countKeys,setCountKeys] = useState(0);
+  const [countLocks,setCountLocks] = useState(0);
 
   const pushToken = async () => {
     await registerForPushNotificationsAsync(userId);
@@ -28,6 +35,11 @@ const Home = () => {
       const fetchKeys = async () => {
         const user = await getUser();
         const key = await getCurrentKey();
+        const countkey = await getCountUserKeys(user.id);
+        const countlock = await getCountUserLocks(user.id);
+        if (countkey) setCountKeys(countkey.count);
+        if (countlock) setCountLocks(countlock.count);
+        if (key) setCurrentKeyId(key.id);
         if (key) setCurrentKey(key.name);
         if(user.id) setUserId(user.id);
         if (user.name) setName(user.name)
@@ -37,6 +49,14 @@ const Home = () => {
       pushToken();
     }, [])
   );
+
+  const activateKeyModalRef = useRef(setActivateKeyModal);
+
+  useEffect(() => {
+    activateKeyModalRef.current = setActivateKeyModal;
+  }, [setActivateKeyModal]);
+
+  useNotificationHandlers(() => activateKeyModalRef.current(false));
 
   return (
         <SafeAreaView className='bg-tertiary h-full'>
@@ -77,6 +97,7 @@ const Home = () => {
                       />
                       <Text className='ml-1 mt-4 font-psemibold text-base'>Birtokolt kulcsok</Text>
                     </View>
+                    <Text className='text-4xl font-psemibold text-center mt-10'>{countKeys}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => {router.push('/(tabs)/lock')}} className='w-[49%] h-60 bg-secondary rounded-3xl'>
@@ -87,6 +108,7 @@ const Home = () => {
                         />
                         <Text className='ml-2 mt-4 font-psemibold text-base'>Birtokolt zárak</Text>
                     </View>
+                    <Text className='text-4xl font-psemibold text-center mt-10'>{countLocks}</Text>
                 </TouchableOpacity>
 
               </View>
@@ -99,7 +121,7 @@ const Home = () => {
                 <Text className='ml-5 font-psemibold text-2xl'>Zár regisztrálása</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity className='mt-2 w-full h-[15%] bg-primary rounded-3xl flex-row items-center'>
+              <TouchableOpacity onPress={() => setActivateKeyModal(true)} className='mt-2 w-full h-[15%] bg-primary rounded-3xl flex-row items-center'>
                 <Image
                   source={icons.key}
                   className='w-20 h-20 ml-2'
@@ -132,6 +154,22 @@ const Home = () => {
                     />
                     <CustomButton handlePress={() => {}} title="Regisztrálás" containerStyles={"bg-secondary border-2 mt-10 mb-3"} textStyles={""} isLoading={false}/>
                     <CustomButton handlePress={() => setShowAddLockModal(false)} title="Mégsem" containerStyles={"bg-secondary border-2"} textStyles={""} isLoading={false}/>
+                  </View>
+                </View>
+              </Modal>
+
+              <Modal animationType="fade" transparent={true} visible={activateKeyModal}>
+                <View className='justify-center items-center flex-1 bg-black/50'>
+                  <View className='bg-secondary px-6 py-4 rounded-2xl shadow-lg min-w-[80%] min-h-[30%]'>
+                    <Text className="font-psemibold text-2xl">Kulcs aktiválása</Text>
+                    <Text className="font-psemibold text-base">Jelenleg kiválasztott kulcs: {currentKey}</Text>
+                    <CustomButton handlePress={() => {
+                        startBle(userId, currentKeyId);
+                    }} title="Aktivál" containerStyles={"bg-secondary border-2 mt-10 mb-3"} textStyles={""} isLoading={false}/>
+                    <CustomButton handlePress={() => {
+                        setActivateKeyModal(false);
+                        stopBle();
+                      }} title="Mégsem" containerStyles={"bg-secondary border-2"} textStyles={""} isLoading={false}/>
                   </View>
                 </View>
               </Modal>

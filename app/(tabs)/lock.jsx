@@ -8,23 +8,44 @@ import LockCard from '../../components/LockCard'
 import { getUserLocks } from '../../lib/api/locks'
 import { getUser } from '../../lib/services/secureStore'
 import { router } from 'expo-router'
+import NetInfo from "@react-native-community/netinfo";
 
 const Lock = () => {
 
   const [locks, setLocks] = useState([]);
   const [name,setName] = useState("Felhasználó");
+  const [searchQuery, setSearchQuery] = useState('');
+  const filteredLocks = locks.filter(lock =>
+    lock.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
 
   useEffect(() => {
-    const fetchLock = async () => {
-      const user = await getUser();
-      const data = await getUserLocks(user.id);
-      if (data) setLocks(data);
-      if (user.name) setName(user.name);
-      setIsLoading(false);
+    const init = async () => { 
+      const netState = await NetInfo.fetch();
+      if (netState.isConnected) {
+        loggedIn();
+      } else {
+        const valid = await isLoginValid();
+        if (valid) {
+          await fetchLock();
+        } else {
+          console.error('Nincs érvényes bejelentkezés.');
+        }
+      }
     };
-
-    fetchLock();
+  
+    init();
   }, []);
+
+
+  const fetchLock = async () => {
+    const user = await getUser();
+    const data = await getUserLocks(user.id);
+    if (data) setLocks(data);
+    if (user.name) setName(user.name);
+    setIsLoading(false);
+  };
 
   const [isLoading,setIsLoading] = useState(true);
 
@@ -46,7 +67,7 @@ const Lock = () => {
   return (
     <SafeAreaView className='bg-tertiary h-full px-4'>
       <FlatList
-        data={locks}
+        data={filteredLocks}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({item}) => (
           <LockCard item={item} fn={() => navigateLockProfile(item.id)}/>
@@ -66,6 +87,8 @@ const Lock = () => {
             <SearchInput
               otherStyles={'bg-secondary'}
               placeholder={"Keresés..."}
+              value={searchQuery}
+              handleChangeText={setSearchQuery}
             />
           </View>
         )}

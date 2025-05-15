@@ -24,6 +24,7 @@ const NumberStepper = ({ initialValue = 0, min = 0, max = 100, step = 1, onValue
         keyboardType="numeric"
         value={value.toString()}
         onChangeText={(text) => updateValue(parseInt(text) || 0)}
+        color="yellow"
       />
 
       {/* Növelés (+) */}
@@ -38,27 +39,28 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'teritiary',
     padding: 10,
     borderRadius: 10,
   },
   button: {
     padding: 10,
-    backgroundColor: '#007bff',
+    backgroundColor: 'black',
     borderRadius: 5,
     marginHorizontal: 5,
   },
   buttonText: {
-    color: 'white',
+    color: 'yellow',
     fontSize: 18,
   },
   input: {
     width: 60,
     textAlign: 'center',
     fontSize: 18,
-    backgroundColor: 'white',
+    backgroundColor: 'black',
     borderRadius: 5,
     padding: 5,
+    textColor: 'white',
   },
 });
 
